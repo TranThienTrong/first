@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'main.dart';
 
 class Answer extends StatelessWidget {
   late final void Function() selected;
   late final String answerText;
+  final String right;
 
-  Answer(this.selected, this.answerText){}
+  Answer(this.selected, this.answerText, this.right){
 
+    if(this.answerText.compareTo(this.right)==0){
+       MyApp.totalScore++;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -4,9 +4,9 @@ class Question extends StatelessWidget {
   late String question;
 
   var questionsList = <String>[
-    'What\'s your fav color',
-    'What\'s your fav animal',
-    'What\'s your fav food',
+    'What\'s your fav color?',
+    'What\'s your fav animal?',
+    'What\'s your fav food?',
   ];
 
 
