@@ -5,23 +5,24 @@ import 'package:projects/ShopApp/providers/product_provider.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatelessWidget {
-  late final Product product;
-
   ProductDetailScreen();
 
   @override
   Widget build(BuildContext context) {
     ProductProvider productProvider = Provider.of<ProductProvider>(context);
 
-    this.product = ModalRoute.of(context)!.settings.arguments as Product;
+    Product loadedProduct = productProvider.productList.firstWhere((element) {
+      return element.id ==
+          (ModalRoute.of(context)!.settings.arguments as String);
+    });
 
     return Scaffold(
-      appBar: AppBar(title: Text(product.title)),
+      appBar: AppBar(title: Text(loadedProduct.title)),
       body: Column(children: <Widget>[
         new Container(
             height: 300,
             width: double.infinity,
-            child: Image.network(product.imageUrl, fit: BoxFit.cover)),
+            child: Image.network(loadedProduct.imageUrl, fit: BoxFit.cover)),
         new Container(
             margin: EdgeInsets.all(10),
             child: Text('Ingredients', style: TextStyle(color: Colors.black))),
@@ -39,8 +40,7 @@ class ProductDetailScreen extends StatelessWidget {
       ]),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.home),
-          onPressed: () => Navigator.of(context).pop()
-      ),
+          onPressed: () => Navigator.of(context).pop()),
     );
   }
 }
