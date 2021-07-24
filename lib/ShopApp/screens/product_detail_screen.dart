@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:projects/MealsApp/models/meal.dart';
-import 'package:projects/ShopApp/data/product.dart';
+import 'package:projects/ShopApp/models/product.dart';
 import 'package:projects/ShopApp/providers/product_provider.dart';
+import 'package:projects/ShopApp/widgets/app_drawer.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatelessWidget {
@@ -17,26 +17,17 @@ class ProductDetailScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: Text(loadedProduct.title)),
+      appBar: AppBar(title: Text(loadedProduct.title!)),
+      drawer: AppDrawer(),
       body: Column(children: <Widget>[
         new Container(
             height: 300,
             width: double.infinity,
-            child: Image.network(loadedProduct.imageUrl, fit: BoxFit.cover)),
+            child: Image.network(loadedProduct.imageUrl!, fit: BoxFit.cover)),
         new Container(
             margin: EdgeInsets.all(10),
             child: Text('Ingredients', style: TextStyle(color: Colors.black))),
-        // new Container(
-        //     height: 300,
-        //     width: 300,
-        //     child: ListView.builder(
-        //         itemBuilder: (context, index) {
-        //           return Card(
-        //               child: Padding(
-        //                   padding: EdgeInsets.all(10),
-        //                   child: Text('')));
-        //         },
-        //         itemCount: meal.ingredients!.length))
+
       ]),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.home),

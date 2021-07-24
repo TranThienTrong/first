@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:projects/ShopApp/data/product.dart';
+import 'package:projects/ShopApp/models/product.dart';
 import 'package:projects/ShopApp/providers/cart.dart';
 import 'package:projects/ShopApp/providers/product_provider.dart';
+import 'package:projects/ShopApp/widgets/app_drawer.dart';
 import 'package:projects/ShopApp/widgets/badge.dart';
 import 'package:projects/ShopApp/widgets/product_item.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,25 @@ class ProductOverviewScreen extends StatefulWidget {
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   late FilterProduct filter = FilterProduct.All;
+  ProductProvider? productProvider;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if(productProvider == null){
+      productProvider = Provider.of<ProductProvider>(context);
+      productProvider!.getAllProductFromDB();
+    }
+    super.didChangeDependencies();
+  }
+
+  Future<void> refresh() async {
+    await productProvider!.getAllProductFromDB();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +63,13 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
                     }
                   });
                 },
-                itemBuilder: (_) =>
-                [
-                  PopupMenuItem(
-                      child: Text('Favorite'), value: FilterProduct.Favorite),
-                  PopupMenuItem(child: Text('All'), value: FilterProduct.All)
-                ]),
+                itemBuilder: (_) => [
+                      PopupMenuItem(
+                          child: Text('Favorite'),
+                          value: FilterProduct.Favorite),
+                      PopupMenuItem(
+                          child: Text('All'), value: FilterProduct.All)
+                    ]),
           ),
           Container(
               width: 50,
@@ -60,32 +81,36 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
                         child: iconButton!);
                   },
                   child: IconButton(
-                      icon: Icon(Icons.shopping_cart), onPressed: () {
-                    Navigator.of(context).pushNamed('cart_screen');
-                  }))),
+                      icon: Icon(Icons.shopping_cart),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed('cart_screen');
+                      }))),
         ],
       ),
-      body: Container(
-          child: GridView.count(
-            crossAxisCount: 2,
-            padding: EdgeInsets.all(19),
-            childAspectRatio: 1,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            children: productList
-                .where((element) {
-              if (filter == FilterProduct.Favorite) {
-                if (!element.isFavourite) {
-                  return false;
+      drawer: AppDrawer(),
+      body: RefreshIndicator(
+        onRefresh:refresh,
+        child: Container(
+            child: GridView.count(
+          crossAxisCount: 2,
+          padding: EdgeInsets.all(19),
+          childAspectRatio: 1,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          children: productList
+              .where((element) {
+                if (filter == FilterProduct.Favorite) {
+                  if (!element.isFavourite) {
+                    return false;
+                  }
                 }
-              }
-              return true;
-            })
-                .map((product) =>
-                ChangeNotifierProvider.value(
-                    value: product, child: ProductItem()))
-                .toList(),
-          )),
+                return true;
+              })
+              .map((product) => ChangeNotifierProvider.value(
+                  value: product, child: ProductItem()))
+              .toList(),
+        )),
+      ),
     );
   }
 }

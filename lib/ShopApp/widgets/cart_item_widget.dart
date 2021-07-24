@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:projects/ShopApp/data/product.dart';
+import 'package:projects/ShopApp/models/product.dart';
 import 'package:projects/ShopApp/providers/cart.dart';
 import 'package:projects/ShopApp/providers/product_provider.dart';
 import 'package:provider/provider.dart';
@@ -24,8 +24,25 @@ class CartItemWidget extends StatelessWidget {
         child: Icon(Icons.delete, color: Colors.white, size: 40),
       ),
       direction: DismissDirection.endToStart,
-      onDismissed: (direction){
+      onDismissed: (direction) {
         cart.removeCartItem(productId!);
+      },
+      confirmDismiss: (direction) {
+        return showDialog(
+            context: context,
+            builder: (context) =>
+                AlertDialog(content: Text('Delete this product?'), actions: [
+                  ElevatedButton(
+                      child: Text('Yes'),
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      }),
+                  ElevatedButton(
+                      child: Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      })
+                ]));
       },
       child: Card(
           margin: EdgeInsets.all(5),
@@ -36,7 +53,7 @@ class CartItemWidget extends StatelessWidget {
                       fit: BoxFit.cover,
                       child: CircleAvatar(
                           backgroundColor: Colors.white,
-                          child: Image.network(product!.imageUrl))),
+                          child: Image.network(product!.imageUrl!))),
                   title: Text(cartItem!.title,
                       style: TextStyle(color: Colors.black)),
                   subtitle: Text(

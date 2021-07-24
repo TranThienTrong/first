@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:projects/ShopApp/data/product.dart';
+import 'package:projects/ShopApp/models/product.dart';
 import 'package:projects/ShopApp/providers/product_provider.dart';
+import 'package:provider/provider.dart';
 
 /* Lớp này tạo ra chủ yếu để cộng tổng các product giống nhau cho dễ */
 class CartItem {
@@ -17,12 +18,15 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
-  late Map<String, CartItem> _cartItemList={};
+  ProductProvider productProvider;
+
+  Cart(this.productProvider);
+
+  late Map<String, CartItem> _cartItemList = {};
 
   Map<String, CartItem> get cartItemList => this._cartItemList;
 
-  int get cartItemQuantity =>  this._cartItemList.length;
-
+  int get cartItemQuantity => this._cartItemList.length;
 
   void addCartItem(String productId) {
     if (_cartItemList.containsKey(productId)) {
@@ -32,15 +36,15 @@ class Cart with ChangeNotifier {
               id: existCartItem.id,
               title: existCartItem.title,
               price: existCartItem.price,
-              quantity: existCartItem.quantity+=1));
+              quantity: existCartItem.quantity += 1));
     } else {
-      Product? product = ProductProvider().findProduct(productId);
+      Product? product = productProvider.findProduct(productId);
       _cartItemList.putIfAbsent(
           productId,
           () => CartItem(
               id: DateTime.now().toString(),
-              title: product!.title,
-              price: product.price,
+              title: product!.title!,
+              price: product.price!,
               quantity: 1));
     }
     notifyListeners();
@@ -48,17 +52,32 @@ class Cart with ChangeNotifier {
 
   void removeCartItem(String productId) {
     if (_cartItemList.containsKey(productId)) {
-      _cartItemList.remove(productId);
+      if (cartItemList[productId]!.quantity > 1) {
+        cartItemList.update(
+            productId,
+            (existCartItem) => CartItem(
+                id: existCartItem.id,
+                title: existCartItem.title,
+                price: existCartItem.price,
+                quantity: existCartItem.quantity -= 1));
+      } else if (cartItemList[productId]!.quantity == 1) {
+        _cartItemList.remove(productId);
+      }
+
       notifyListeners();
     }
   }
 
+  double get totalPrice {
+    double sum = 0;
+    this._cartItemList.forEach((productId, cartItem) {
+      sum += cartItem.price * cartItem.quantity;
+    });
+    return sum;
+  }
 
-  double get totalPrice{
-      double sum=0;
-      this._cartItemList.forEach((productId, cartItem) {
-          sum+= cartItem.price * cartItem.quantity;
-      });
-      return sum;
+  void clear() {
+    _cartItemList.clear();
+    notifyListeners();
   }
 }
