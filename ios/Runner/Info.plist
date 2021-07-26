@@ -12,6 +12,14 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>projects</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<String>We need to take picture</String>
+	<key>NSCameraUsageDescription</key>
+	<String>We need access to your library</String>
+	<key>NSMicrophoneUsageDescription</key>
+    <String>We need access to your Microphone</String>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <String>Location</String>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
